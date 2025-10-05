@@ -1,0 +1,89 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Data files (grandes archivos GeoTIFF)
+data/rasters/*.tif
+data/rasters/*.tiff
+data/vectors/*.shp
+data/vectors/*.dbf
+data/vectors/*.shx
+data/vectors/*.prj
+
+# Mantener estructura de directorios
+!data/rasters/.gitkeep
+!data/vectors/.gitkeep
+
+# Modelos entrenados (pueden ser muy grandes)
+models/*.pkl
+models/*.pth
+models/*.h5
+
+# Logs
+logs/
+*.log
+
+# Output
+outputs/
+*.png
+*.jpg
+*.jpeg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Compressed files
+*.zip
+*.tar.gz
+*.rar
+
+# Cache
+.cache/
+*.cache
