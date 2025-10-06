@@ -296,7 +296,7 @@ m = folium.Map(
 )
 
 # Añadir capas base alternativas
-folium.TileLayer('Stamen Terrain', name='Terreno').add_to(m)
+folium.TileLayer('Stamen Terrain', name='Terreno',attr='Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL.').add_to(m)
 folium.TileLayer(
     tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     attr='Esri',
