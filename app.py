@@ -21,6 +21,27 @@ import base64
 from io import BytesIO
 
 # Configuración de página con tema NASA
+st.markdown("""
+    <style>
+    /* Light blue background */
+    .stApp {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    }
+    
+    /* Optional: Keep text dark for better contrast on light background */
+    .stApp * {
+        color: #1a1a1a;
+    }
+    
+    /* Optional: Style the content container */
+    .block-container {
+        background-color: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        padding: 2rem;
+    }
+    </style>
+""", unsafe_allow_html=True)
 st.set_page_config(
     page_title="Forest Degradation Monitor - Madre de Dios",
     page_icon="🛰️",
