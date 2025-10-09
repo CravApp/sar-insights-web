@@ -245,43 +245,44 @@ st.markdown("---")
 
 # ==================== SIDEBAR - CONTROLES ====================
 
+
 with st.sidebar:
-    st.markdown("### 🎛️ Control de Capas")
+    st.markdown("### 🎛️ Layer Control")
     
-    st.markdown("#### Datos SAR Sentinel-1")
-    show_vv = st.checkbox("📡 Retrodispersión VV", value=False, 
-                          help="Polarización vertical-vertical (VV) - Sensible a estructura vertical del bosque")
-    show_vh = st.checkbox("📡 Retrodispersión VH", value=False,
-                          help="Polarización vertical-horizontal (VH) - Sensible a biomasa y follaje")
-    show_ratio = st.checkbox("📊 Ratio VH/VV", value=False,
-                            help="Índice de volumen de dispersión - detecta cambios en estructura del dosel")
+    st.markdown("#### Sentinel-1 SAR Data")
+    show_vv = st.checkbox("📡 VV Backscatter", value=False, 
+                          help="Vertical-vertical polarization (VV) - Sensitive to forest vertical structure")
+    show_vh = st.checkbox("📡 VH Backscatter", value=False,
+                          help="Vertical-horizontal polarization (VH) - Sensitive to biomass and foliage")
+    show_ratio = st.checkbox("📊 VH/VV Ratio", value=False,
+                            help="Volume scattering index - detects changes in canopy structure")
     
-    st.markdown("#### Análisis de Cambio")
+    st.markdown("#### Change Analysis")
     show_cusum = st.checkbox("📈 Rsum_max (CuSum)", value=True,
-                            help="Suma acumulada de cambios - detecta degradación temporal")
+                            help="Cumulative sum of changes - detects temporal degradation")
     
-    st.markdown("#### Clasificación IA")
-    show_classification = st.checkbox("🤖 Mapa de Clasificación (RF/U-TAE)", value=True,
-                                     help="Resultado de Random Forest o U-TAE Transformer")
-    show_alerts = st.checkbox("🚨 Alertas de Degradación", value=True,
-                             help="Polígonos de áreas con cambio detectado")
-    
-    st.markdown("---")
-    st.markdown("#### ⚙️ Configuración del Mapa")
-    opacity = st.slider("Opacidad de capas", 0.0, 1.0, 0.6, 0.1)
+    st.markdown("#### AI Classification")
+    show_classification = st.checkbox("🤖 Classification Map (RF/U-TAE)", value=True,
+                                     help="Random Forest or U-TAE Transformer result")
+    show_alerts = st.checkbox("🚨 Degradation Alerts", value=True,
+                             help="Polygons of areas with detected change")
     
     st.markdown("---")
-    st.markdown("#### 📥 Exportación")
+    st.markdown("#### ⚙️ Map Settings")
+    opacity = st.slider("Layer opacity", 0.0, 1.0, 0.6, 0.1)
     
-    export_format = st.selectbox("Formato de exportación", ["GeoJSON", "PNG", "GeoTIFF"])
+    st.markdown("---")
+    st.markdown("#### 📥 Export")
     
-    if st.button("⬇️ Descargar Vista Actual"):
-        st.info("🔄 Funcionalidad de exportación implementada en desarrollo")
-        # En producción: implementar exportación real según formato seleccionado
+    export_format = st.selectbox("Export format", ["GeoJSON", "PNG", "GeoTIFF"])
+    
+    if st.button("⬇️ Download Current View"):
+        st.info("🔄 Export functionality under development")
+        # In production: implement real export according to selected format
 
 # ==================== MAPA PRINCIPAL ====================
 
-st.markdown("### 🗺️ Mapa Interactivo de Monitoreo")
+st.markdown("### 🗺️ Interactive Monitoring Map")
 
 # Coordenadas de Madre de Dios, Perú
 MADRE_DE_DIOS_CENTER = [-12.5, -70.0]
@@ -328,11 +329,11 @@ layer_config = {
 
 # Información de ejemplo (en producción, se cargarían archivos reales)
 st.info("""
-📌 **Nota de Demostración:** Esta es una interfaz de visualización. 
-En producción, los archivos GeoTIFF y GeoJSON se cargarían desde el directorio `data/`.
-Para probar con datos reales, coloca tus archivos en:
-- `data/rasters/` → archivos `.tif` (vv_backscatter.tif, vh_backscatter.tif, etc.)
-- `data/vectors/` → archivo `alerts.geojson`
+📌 **Demo Note:** This is a visualization interface. 
+In production, GeoTIFF and GeoJSON files would be loaded from the `data/` directory.
+To test with real data, place your files in:
+- `data/rasters/` → `.tif` files (vv_backscatter.tif, vh_backscatter.tif, etc.)
+- `data/vectors/` → `alerts.geojson` file
 """)
 
 # Simular carga de capas (en producción descomentar)
@@ -354,11 +355,11 @@ if show_alerts:
     #     add_geojson_to_map(m, gdf_alerts, "Alertas de Degradación")
     pass
 
-# Añadir marcador de ejemplo en Madre de Dios
+# Add example marker in Madre de Dios
 folium.Marker(
     MADRE_DE_DIOS_CENTER,
-    popup="<b>Madre de Dios</b><br>Región de Monitoreo",
-    tooltip="Centro de monitoreo",
+    popup="<b>Madre de Dios</b><br>Monitoring Region",
+    tooltip="Monitoring Center",
     icon=folium.Icon(color='red', icon='info-sign')
 ).add_to(m)
 
@@ -374,9 +375,10 @@ plugins.MeasureControl(position='topleft', primary_length_unit='kilometers').add
 # Mostrar mapa
 folium_static(m, width=1400, height=600)
 
-# ==================== LEYENDA ====================
-
 st.markdown("### 📊 Leyenda de Capas Activas")
+# ==================== LEGEND ====================
+
+st.markdown("### 📊 Active Layers Legend")
 
 legend_cols = st.columns(5)
 
@@ -384,105 +386,104 @@ with legend_cols[0]:
     if show_cusum:
         st.markdown("""
         **CuSum (Rsum_max)**
-        - 🟢 Verde: Sin cambio
-        - 🟡 Amarillo: Cambio moderado
-        - 🔴 Rojo: Cambio significativo
+        - 🟢 Green: No change
+        - 🟡 Yellow: Moderate change
+        - 🔴 Red: Significant change
         """)
 
 with legend_cols[1]:
     if show_classification:
         st.markdown("""
-        **Clasificación**
-        - 🟢 Verde oscuro: Bosque intacto
-        - 🟢 Verde claro: Bosque secundario
-        - 🟡 Amarillo: Degradación leve
-        - 🟠 Naranja: Degradación severa
-        - 🔴 Rojo: Deforestación
+        **Classification**
+        - 🟢 Dark green: Intact forest
+        - 🟢 Light green: Secondary forest
+        - 🟡 Yellow: Mild degradation
+        - 🟠 Orange: Severe degradation
+        - 🔴 Red: Deforestation
         """)
 
 with legend_cols[2]:
     if show_vv:
         st.markdown("""
         **VV Backscatter**
-        - Azul oscuro → Azul claro
-        - Mayor retrodispersión indica
-        - mayor estructura vertical
+        - Dark blue → Light blue
+        - Higher backscatter indicates
+        - greater vertical structure
         """)
 
 with legend_cols[3]:
     if show_vh:
         st.markdown("""
         **VH Backscatter**
-        - Verde oscuro → Cian
-        - Relacionado con biomasa
-        - y densidad de follaje
+        - Dark green → Cyan
+        - Related to biomass
+        - and foliage density
         """)
 
 with legend_cols[4]:
     if show_alerts:
         st.markdown("""
-        **Alertas**
-        - 🔴 Polígonos rojos
-        - Áreas con cambio detectado
-        - Requieren verificación
+        **Alerts**
+        - 🔴 Red polygons
+        - Areas with detected change
+        - Require verification
         """)
 
-# ==================== CASOS DE ESTUDIO ====================
-
 st.markdown("---")
-st.markdown("### 📍 Casos de Estudio")
+st.markdown("---")
+st.markdown("### 📍 Case Studies")
 
 case_studies = {
-    "Caso 1: Minería Ilegal - Río Malinowski": {
+    "Case 1: Illegal Mining - Malinowski River": {
         "coords": [-12.8, -70.2],
         "zoom": 12,
         "description": """
-        **Zona afectada por minería aurífera ilegal**
+        **Area affected by illegal gold mining**
         
-        - **Coordenadas:** 12°48'S, 70°12'W
-        - **Área afectada:** ~450 hectáreas
-        - **Período:** 2020-2024
-        - **Detección:** Cambio abrupto en VV backscatter y aumento de Rsum_max
-        - **Impacto:** Deforestación completa, contaminación de ríos con mercurio
-        - **Estado:** Alerta roja activa, requiere intervención inmediata
+        - **Coordinates:** 12°48'S, 70°12'W
+        - **Affected area:** ~450 hectares
+        - **Period:** 2020-2024
+        - **Detection:** Abrupt change in VV backscatter and increase in Rsum_max
+        - **Impact:** Complete deforestation, river contamination with mercury
+        - **Status:** Active red alert, requires immediate intervention
         """
     },
-    "Caso 2: Tala Selectiva - Reserva Tambopata": {
+    "Case 2: Selective Logging - Tambopata Reserve": {
         "coords": [-12.3, -69.5],
         "zoom": 12,
         "description": """
-        **Degradación gradual por extracción maderera**
+        **Gradual degradation due to logging**
         
-        - **Coordenadas:** 12°18'S, 69°30'W
-        - **Área afectada:** ~1,200 hectáreas
-        - **Período:** 2021-2024
-        - **Detección:** Disminución progresiva de VH/VV ratio
-        - **Impacto:** Pérdida de 30% de cobertura de dosel, fragmentación del hábitat
-        - **Estado:** Alerta naranja, degradación en curso
+        - **Coordinates:** 12°18'S, 69°30'W
+        - **Affected area:** ~1,200 hectares
+        - **Period:** 2021-2024
+        - **Detection:** Progressive decrease in VH/VV ratio
+        - **Impact:** 30% canopy loss, habitat fragmentation
+        - **Status:** Orange alert, ongoing degradation
         """
     },
-    "Caso 3: Carretera Interoceánica - Zona de Amortiguamiento": {
+    "Case 3: Interoceanic Highway - Buffer Zone": {
         "coords": [-12.6, -69.8],
         "zoom": 11,
         "description": """
-        **Deforestación asociada a infraestructura vial**
+        **Deforestation associated with road infrastructure**
         
-        - **Coordenadas:** 12°36'S, 69°48'W
-        - **Área afectada:** ~2,800 hectáreas
-        - **Período:** 2019-2024
-        - **Detección:** Patrón lineal de cambio en clasificación multitemporal
-        - **Impacto:** Deforestación de 15 km a cada lado de carretera, invasiones
-        - **Estado:** Monitoreo continuo, expansión predecible
+        - **Coordinates:** 12°36'S, 69°48'W
+        - **Affected area:** ~2,800 hectares
+        - **Period:** 2019-2024
+        - **Detection:** Linear change pattern in multitemporal classification
+        - **Impact:** Deforestation 15 km on each side of the road, invasions
+        - **Status:** Continuous monitoring, predictable expansion
         """
     }
 }
 
 selected_case = st.selectbox(
-    "Selecciona un caso de estudio para explorar:",
-    ["Ninguno"] + list(case_studies.keys())
+    "Select a case study to explore:",
+    ["None"] + list(case_studies.keys())
 )
 
-if selected_case != "Ninguno":
+if selected_case != "None":
     case_info = case_studies[selected_case]
     
     col1, col2 = st.columns([2, 1])
@@ -526,100 +527,101 @@ if selected_case != "Ninguno":
 # ==================== ESTADÍSTICAS Y MÉTRICAS ====================
 
 st.markdown("---")
-st.markdown("### 📈 Estadísticas de Monitoreo")
+st.markdown("### 📈 Monitoring Statistics")
 
 metric_cols = st.columns(4)
 
-# Datos de ejemplo (en producción calcular de rasters reales)
+# Example data (in production, calculate from real rasters)
 with metric_cols[0]:
     st.metric(
-        label="Área Total Monitoreada",
+        label="Total Monitored Area",
         value="8.5M ha",
-        delta="↑ 0.5M ha este mes"
+        delta="↑ 0.5M ha this month"
     )
 
 with metric_cols[1]:
     st.metric(
-        label="Alertas Activas",
+        label="Active Alerts",
         value="247",
-        delta="↑ 23 vs. mes anterior",
+        delta="↑ 23 vs. last month",
         delta_color="inverse"
     )
 
 with metric_cols[2]:
     st.metric(
-        label="Degradación Detectada",
+        label="Detected Degradation",
         value="12,450 ha",
-        delta="↑ 8.3% este trimestre",
+        delta="↑ 8.3% this quarter",
         delta_color="inverse"
     )
 
 with metric_cols[3]:
     st.metric(
-        label="Precisión del Modelo",
+        label="Model Accuracy",
         value="94.2%",
-        delta="↑ 2.1% con U-TAE"
+        delta="↑ 2.1% with U-TAE"
     )
 
 # ==================== INFORMACIÓN TÉCNICA ====================
 
-with st.expander("ℹ️ Información Técnica del Sistema"):
+
+with st.expander("ℹ️ System Technical Information"):
     st.markdown("""
-    ### Metodología de Detección
+    ### Detection Methodology
     
-    **Datos Utilizados:**
-    - Imágenes SAR Sentinel-1 (C-band, 5.405 GHz)
-    - Polarizaciones: VV y VH
-    - Resolución espacial: 10m
-    - Frecuencia temporal: 6-12 días
+    **Data Used:**
+    - Sentinel-1 SAR images (C-band, 5.405 GHz)
+    - Polarizations: VV and VH
+    - Spatial resolution: 10m
+    - Temporal frequency: 6-12 days
     
-    **Algoritmos de IA:**
-    1. **Random Forest (RF):** Clasificación supervisada con 500 árboles de decisión
+    **AI Algorithms:**
+    1. **Random Forest (RF):** Supervised classification with 500 decision trees
         - Features: VV, VH, VH/VV, GLCM textures, temporal statistics
         - Accuracy: 91.5% (validation set)
     
-    2. **U-TAE Transformer:** Red neuronal para análisis temporal
-        - Arquitectura: U-Net + Temporal Attention Encoder
-        - Input: Serie temporal de 24 imágenes (2 años)
+    2. **U-TAE Transformer:** Neural network for temporal analysis
+        - Architecture: U-Net + Temporal Attention Encoder
+        - Input: Time series of 24 images (2 years)
         - Accuracy: 94.2% (validation set)
     
-    **Métricas de Cambio:**
-    - **CuSum (Rsum_max):** Suma acumulada de residuos para detectar cambios graduales
-    - **Diferencias multi-temporales:** Análisis de tendencias en backscatter
-    - **Índices de textura:** GLCM (Gray-Level Co-occurrence Matrix)
+    **Change Metrics:**
+    - **CuSum (Rsum_max):** Cumulative sum of residuals to detect gradual changes
+    - **Multi-temporal differences:** Trend analysis in backscatter
+    - **Texture indices:** GLCM (Gray-Level Co-occurrence Matrix)
     
-    **Validación:**
-    - Ground truth: Verificación en campo y imágenes de alta resolución
-    - Métricas: Precision, Recall, F1-Score, Overall Accuracy
-    - Validación cruzada espacial para evitar overfitting
+    **Validation:**
+    - Ground truth: Field verification and high-resolution imagery
+    - Metrics: Precision, Recall, F1-Score, Overall Accuracy
+    - Spatial cross-validation to avoid overfitting
     """)
 
-with st.expander("🔧 Instrucciones de Uso"):
+with st.expander("🔧 Usage Instructions"):
     st.markdown("""
-    ### Cómo usar esta aplicación
+    ### How to use this application
     
-    1. **Explorar el mapa:** Usa el zoom y el arrastre para navegar por Madre de Dios
+    1. **Explore the map:** Use zoom and drag to navigate Madre de Dios
     
-    2. **Activar capas:** En la barra lateral, marca las capas que deseas visualizar
-        - Combina múltiples capas para análisis integral
-        - Ajusta la opacidad para mejor visualización
+    2. **Activate layers:** In the sidebar, check the layers you want to visualize
+        - Combine multiple layers for comprehensive analysis
+        - Adjust opacity for better visualization
     
-    3. **Casos de estudio:** Selecciona un caso en el menú desplegable para ver ejemplos reales
+    3. **Case studies:** Select a case from the dropdown menu to see real examples
     
-    4. **Herramientas del mapa:**
-        - 🔍 Buscar ubicaciones específicas (esquina superior derecha)
-        - 📏 Medir distancias (esquina superior izquierda)
-        - 🗺️ Cambiar capa base (control de capas)
+    4. **Map tools:**
+        - 🔍 Search specific locations (top right corner)
+        - 📏 Measure distances (top left corner)
+        - 🗺️ Change base layer (layer control)
     
-    5. **Exportar datos:** Usa el botón de descarga en la barra lateral
-        - GeoJSON: Para análisis en GIS
-        - PNG: Para reportes y presentaciones
-        - GeoTIFF: Para análisis raster avanzado
+    5. **Export data:** Use the download button in the sidebar
+        - GeoJSON: For GIS analysis
+        - PNG: For reports and presentations
+        - GeoTIFF: For advanced raster analysis
     
-    6. **Interpretar resultados:**
-        - Verde: Bosque saludable, sin cambios
-        - Amarillo/Naranja: Degradación detectada, requiere monitoreo
-        - Rojo: Deforestación o cambio severo, requiere acción inmediata
+    6. **Interpret results:**
+        - Green: Healthy forest, no changes
+        - Yellow/Orange: Degradation detected, requires monitoring
+        - Red: Deforestation or severe change, requires immediate action
     """)
 
 # ==================== FOOTER ====================
@@ -631,22 +633,22 @@ footer_cols = st.columns(3)
 with footer_cols[0]:
     st.markdown("""
     **🛰️ NASA Space Apps Challenge**  
-    Desarrollado con datos Sentinel-1 (ESA)  
+    Developed with Sentinel-1 data (ESA)  
     Copernicus Programme
     """)
 
 with footer_cols[1]:
     st.markdown("""
-    **📧 Contacto**  
+    **📧 Contact**  
     forestmonitor@example.com  
     [GitHub Repository](#)
     """)
 
 with footer_cols[2]:
     st.markdown("""
-    **📅 Última Actualización**  
-    Datos: 28 Septiembre 2024  
-    Modelo: U-TAE v2.1
+    **📅 Last Update**  
+    Data: 28 September 2024  
+    Model: U-TAE v2.1
     """)
 
 st.markdown("""
