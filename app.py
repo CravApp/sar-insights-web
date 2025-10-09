@@ -80,63 +80,57 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ==================== FUNCIONES AUXILIARES ====================
+
+# ==================== HELPER FUNCTIONS ====================
 
 def load_raster(file_path):
     """
-    Carga un archivo raster GeoTIFF y retorna datos y metadatos
-    
+    Loads a GeoTIFF raster file and returns data and metadata
     Args:
-        file_path (str): Ruta al archivo GeoTIFF
-    
+        file_path (str): Path to the GeoTIFF file
     Returns:
-        tuple: (data_array, transform, bounds, crs) o None si falla
+        tuple: (data_array, transform, bounds, crs) or None if fails
     """
     try:
         with rasterio.open(file_path) as src:
-            data = src.read(1)  # Lee la primera banda
+            data = src.read(1)  # Read first band
             transform = src.transform
             bounds = src.bounds
             crs = src.crs
             
-            # Reemplazar valores no válidos
+            # Replace invalid values
             data = np.where(data == src.nodata, np.nan, data)
-            
             return data, transform, bounds, crs
     except FileNotFoundError:
-        st.warning(f"⚠️ Archivo no encontrado: {file_path}")
+        st.warning(f"⚠️ File not found: {file_path}")
         return None
     except Exception as e:
-        st.error(f"❌ Error al cargar {file_path}: {str(e)}")
+        st.error(f"❌ Error loading {file_path}: {str(e)}")
         return None
 
 def load_geojson(file_path):
     """
-    Carga un archivo GeoJSON de alertas
-    
+    Loads a GeoJSON file (alerts)
     Args:
-        file_path (str): Ruta al archivo GeoJSON
-    
+        file_path (str): Path to the GeoJSON file
     Returns:
-        GeoDataFrame o None si falla
+        GeoDataFrame or None if fails
     """
     try:
         gdf = gpd.read_file(file_path)
         return gdf
     except FileNotFoundError:
-        st.warning(f"⚠️ Archivo no encontrado: {file_path}")
+        st.warning(f"⚠️ File not found: {file_path}")
         return None
     except Exception as e:
-        st.error(f"❌ Error al cargar {file_path}: {str(e)}")
+        st.error(f"❌ Error loading {file_path}: {str(e)}")
         return None
 
 def create_colormap(layer_type):
     """
-    Crea colormaps personalizados para cada tipo de capa
-    
+    Create custom colormaps for each layer type
     Args:
-        layer_type (str): Tipo de capa (vv, vh, ratio, cusum, classification)
-    
+        layer_type (str): Layer type (vv, vh, ratio, cusum, classification)
     Returns:
         LinearSegmentedColormap
     """
@@ -154,34 +148,29 @@ def create_colormap(layer_type):
 
 def add_raster_to_map(folium_map, data, bounds, layer_name, colormap, opacity=0.6):
     """
-    Añade una capa raster al mapa de Folium
-    
+    Add a raster layer to the Folium map
     Args:
-        folium_map: Objeto mapa de Folium
-        data: Array numpy con datos raster
-        bounds: Límites geográficos (minx, miny, maxx, maxy)
-        layer_name: Nombre de la capa
-        colormap: Colormap de matplotlib
-        opacity: Opacidad de la capa (0-1)
+        folium_map: Folium map object
+        data: Numpy array with raster data
+        bounds: Geographic bounds (minx, miny, maxx, maxy)
+        layer_name: Layer name
+        colormap: Matplotlib colormap
+        opacity: Layer opacity (0-1)
     """
     try:
-        # Normalizar datos
+        # Normalize data
         data_norm = (data - np.nanmin(data)) / (np.nanmax(data) - np.nanmin(data))
-        
-        # Crear imagen RGBA
+        # Create RGBA image
         colored_data = colormap(data_norm)
-        
-        # Convertir a imagen PIL para Folium
+        # Convert to PIL image for Folium
         from PIL import Image
         img = Image.fromarray((colored_data * 255).astype(np.uint8))
-        
-        # Crear imagen en memoria
+        # Create in-memory image
         buffer = BytesIO()
         img.save(buffer, format='PNG')
         buffer.seek(0)
         encoded = base64.b64encode(buffer.getvalue()).decode()
-        
-        # Añadir como ImageOverlay
+        # Add as ImageOverlay
         folium.raster_layers.ImageOverlay(
             image=f'data:image/png;base64,{encoded}',
             bounds=[[bounds[1], bounds[0]], [bounds[3], bounds[2]]],
@@ -190,18 +179,16 @@ def add_raster_to_map(folium_map, data, bounds, layer_name, colormap, opacity=0.
             overlay=True,
             control=True
         ).add_to(folium_map)
-        
     except Exception as e:
-        st.warning(f"⚠️ No se pudo añadir la capa {layer_name}: {str(e)}")
+        st.warning(f"⚠️ Could not add layer {layer_name}: {str(e)}")
 
 def add_geojson_to_map(folium_map, gdf, layer_name):
     """
-    Añade alertas GeoJSON al mapa
-    
+    Add GeoJSON alerts to the map
     Args:
-        folium_map: Objeto mapa de Folium
-        gdf: GeoDataFrame con alertas
-        layer_name: Nombre de la capa
+        folium_map: Folium map object
+        gdf: GeoDataFrame with alerts
+        layer_name: Layer name
     """
     try:
         folium.GeoJson(
@@ -217,7 +204,7 @@ def add_geojson_to_map(folium_map, gdf, layer_name):
             tooltip=folium.GeoJsonTooltip(fields=['id', 'severity'] if 'severity' in gdf.columns else None)
         ).add_to(folium_map)
     except Exception as e:
-        st.warning(f"⚠️ No se pudo añadir alertas: {str(e)}")
+        st.warning(f"⚠️ Could not add alerts: {str(e)}")
 
 # ==================== CONFIGURACIÓN INICIAL ====================
 
