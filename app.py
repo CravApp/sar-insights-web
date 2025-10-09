@@ -20,28 +20,8 @@ from matplotlib.colors import LinearSegmentedColormap
 import base64
 from io import BytesIO
 
-# Configuración de página con tema NASA
-st.markdown("""
-    <style>
-    /* Light blue background */
-    .stApp {
-        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-    }
-    
-    /* Optional: Keep text dark for better contrast on light background */
-    .stApp * {
-        color: #1a1a1a;
-    }
-    
-    /* Optional: Style the content container */
-    .block-container {
-        background-color: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-        border-radius: 10px;
-        padding: 2rem;
-    }
-    </style>
-""", unsafe_allow_html=True)
+
+# Configuración de página con fondo oscuro, gradiente o imagen, y estilos de texto
 st.set_page_config(
     page_title="Forest Degradation Monitor - Madre de Dios",
     page_icon="🛰️",
@@ -49,41 +29,53 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS personalizado con paleta NASA
+# Puedes cambiar la URL de background-image si prefieres una imagen en vez de gradiente
 st.markdown("""
 <style>
-    /* Paleta NASA: azul oscuro, blanco, gris metálico, rojo */
-    .main {
-        background-color: #0B3D91;
-        color: #FFFFFF;
-    }
     .stApp {
-        background: linear-gradient(135deg, #0B3D91 0%, #1a5490 100%);
+        /* Fondo gradiente oscuro o imagen */
+        background: linear-gradient(135deg, #181c2b 0%, #232946 100%);
+        /* background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1500&q=80');
+        background-size: cover; */
     }
-    h1, h2, h3 {
-        color: #FC3D21 !important;
+    .block-container {
+        background: rgba(30, 30, 40, 0.85);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 32px rgba(0,0,0,0.25);
+    }
+    /* Texto general blanco */
+    .stApp *, .block-container * {
+        color: #fff !important;
+    }
+    /* Títulos y subtítulos en blanco y negrita */
+    h1, h2, h3, h4, h5, h6 {
+        color: #fff !important;
+        font-weight: bold !important;
+        letter-spacing: 0.5px;
         font-family: 'Arial', sans-serif;
     }
-    .stSidebar {
-        background-color: #2C5F8D;
+    /* Párrafos y contenido normal */
+    p, li, span, label, .markdown-text-container {
+        color: #fff !important;
+        font-weight: normal !important;
     }
+    /* Sidebar oscuro */
+    .stSidebar {
+        background: #232946 !important;
+    }
+    /* Botones */
     .stButton>button {
-        background-color: #FC3D21;
-        color: white;
-        border-radius: 5px;
+        background: #3a86ff;
+        color: #fff;
+        border-radius: 6px;
         border: none;
         padding: 10px 20px;
         font-weight: bold;
+        transition: background 0.2s;
     }
     .stButton>button:hover {
-        background-color: #D63015;
-    }
-    .case-study-box {
-        background-color: rgba(255, 255, 255, 0.1);
-        padding: 15px;
-        border-radius: 10px;
-        border-left: 4px solid #FC3D21;
-        margin: 10px 0;
+        background: #265d97;
     }
 </style>
 """, unsafe_allow_html=True)
